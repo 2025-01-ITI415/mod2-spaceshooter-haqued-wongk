@@ -58,4 +58,5 @@ public class ProjectileHero : MonoBehaviour
         set { rigid.velocity = value; }
     }
 
+
 }
