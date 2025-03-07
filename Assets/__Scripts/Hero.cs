@@ -179,6 +179,10 @@ public class Hero : MonoBehaviour
                         // Set it to pUp.type
                         weap.SetType(pUp.type);
                     }
+                    else
+                    {
+                        projectileSpeed+=10;
+                    }
                 }
                 else
                 { // If this is a different weapon type                   // d

@@ -148,9 +148,9 @@ public class Weapon : MonoBehaviour
             case eWeaponType.missile:
                 p = MakeProjectile();
                 Vector3 newScale = transform.localScale;
-                newScale.x = 2.0f;
-                newScale.y = 2.0f;
-                newScale.z = 2.0f;
+                newScale.x = 1.0f;
+                newScale.y = 1.0f;
+                newScale.z = 3.0f;
                 p.transform.localScale = newScale;
                 p.vel = vel;
                 break;
