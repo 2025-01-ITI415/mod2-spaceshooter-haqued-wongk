@@ -2,61 +2,58 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-
-/// <summary
-/// This is an enum of the various possible weapon types.
-/// It also includes a "shield" type to allow a shield PowerUp.
-/// Items marked [NI] below are Not Implemented in this book.
-/// </summary
+/// <summary>
+/// Enum of various weapon types, including Phaser which moves in a wave.
+/// </summary>
 public enum eWeaponType
 {
     none,       // The default / no weapon
     blaster,    // A simple blaster
     spread,     // Multiple shots simultaneously
-    phaser,     // [NI] Shots that move in waves
-    missile,    // [NI] Homing missiles
-
-    laser,      // [NI] Damage over time
+    phaser,     // Shots that move in waves
+    missile,    // Homing missiles
+    laser,      // Damage over time
     shield      // Raise shieldLevel
 }
 
-
-/// <summary
-/// The WeaponDefinition class allows you to set the properties
-///   of a specific weapon in the Inspector. The Main class has
-///   an array of WeaponDefinitions that makes this possible.
-/// </summary
-[System.Serializable]                                                         // a
+/// <summary>
+/// WeaponDefinition defines the properties of each weapon type.
+/// </summary>
+[System.Serializable]
 public class WeaponDefinition
-{                                               // b
+{
     public eWeaponType type = eWeaponType.none;
-    [Tooltip("Letter to show on the PowerUp Cube")]                           // c
+    [Tooltip("Letter to show on the PowerUp Cube")]
     public string letter;
     [Tooltip("Color of PowerUp Cube")]
-    public Color powerUpColor = Color.white;                           // d
-    [Tooltip("Prefab of Weapon model that is attached to the Player Ship")]
+    public Color powerUpColor = Color.white;
+    [Tooltip("Prefab of Weapon model attached to Player Ship")]
     public GameObject weaponModelPrefab;
-    [Tooltip("Prefab of projectile that is fired")]
+    [Tooltip("Prefab of projectile fired by this weapon")]
     public GameObject projectilePrefab;
-    [Tooltip("Color of the Projectile that is fired")]
-    public Color projectileColor = Color.white;                        // d
-    [Tooltip("Damage caused when a single Projectile hits an Enemy")]
+    [Tooltip("Color of the projectile")]
+    public Color projectileColor = Color.white;
+    [Tooltip("Damage per hit")]
     public float damageOnHit = 0;
-    [Tooltip("Damage caused per second by the Laser [Not Implemented]")]
+    [Tooltip("Damage per second for lasers (Not Implemented)")]
     public float damagePerSec = 0;
-    [Tooltip("Seconds to delay between shots")]
+    [Tooltip("Delay between shots")]
     public float delayBetweenShots = 0;
-    [Tooltip("Velocity of individual Projectiles")]
+    [Tooltip("Velocity of projectiles")]
     public float velocity = 50;
+    [Tooltip("Wave Frequency (for Phaser)")]
+    public float waveFrequency = 2f;  // How fast the wave oscillates
+    [Tooltip("Wave Magnitude (for Phaser)")]
+    public float waveMagnitude = 0.5f; // Size of the wave motion
 }
 
 public class Weapon : MonoBehaviour
 {
     static public Transform PROJECTILE_ANCHOR;
 
-    [Header("Dynamic")]                                                        // a
-    [SerializeField]                                                           // a
-    [Tooltip("Setting this manually while playing does not work properly.")]   // a
+    [Header("Dynamic")]
+    [SerializeField]
+    [Tooltip("Setting this manually while playing does not work properly.")]
     private eWeaponType _type = eWeaponType.none;
     public WeaponDefinition def;
     public float nextShotTime; // Time the Weapon will fire next
@@ -68,18 +65,18 @@ public class Weapon : MonoBehaviour
     {
         // Set up PROJECTILE_ANCHOR if it has not already been done
         if (PROJECTILE_ANCHOR == null)
-        {                                       // b
+        {
             GameObject go = new GameObject("_ProjectileAnchor");
             PROJECTILE_ANCHOR = go.transform;
         }
 
-        shotPointTrans = transform.GetChild(0);                              // c
+        shotPointTrans = transform.GetChild(0);
 
         // Call SetType() for the default _type set in the Inspector
-        SetType(_type);                                                      // d
+        SetType(_type);
 
         // Find the fireEvent of a Hero Component in the parent hierarchy
-        Hero hero = GetComponentInParent<Hero>();                              // e
+        Hero hero = GetComponentInParent<Hero>();
         if (hero != null) hero.fireEvent += Fire;
     }
 
@@ -93,7 +90,7 @@ public class Weapon : MonoBehaviour
     {
         _type = wt;
         if (type == eWeaponType.none)
-        {                                       // f
+        {
             this.gameObject.SetActive(false);
             return;
         }
@@ -101,35 +98,35 @@ public class Weapon : MonoBehaviour
         {
             this.gameObject.SetActive(true);
         }
-        // Get the WeaponDefinition for this type from Main
+
+        // Get the WeaponDefinition for this type
         def = Main.GET_WEAPON_DEFINITION(_type);
-        // Destroy any old model and then attach a model for this weapon     // g
+
+        // Destroy any old model and attach a new one
         if (weaponModel != null) Destroy(weaponModel);
         weaponModel = Instantiate<GameObject>(def.weaponModelPrefab, transform);
         weaponModel.transform.localPosition = Vector3.zero;
         weaponModel.transform.localScale = Vector3.one;
 
-        nextShotTime = 0; // You can fire immediately after _type is set.    // h
+        nextShotTime = 0; // You can fire immediately after _type is set
     }
 
     private void Fire()
     {
-        // If this.gameObject is inactive, return
-        if (!gameObject.activeInHierarchy) return;                         // i
-        // If it hasn’t been enough time between shots, return
-        if (Time.time < nextShotTime) return;                              // j
+        // If inactive or not enough time has passed, return
+        if (!gameObject.activeInHierarchy || Time.time < nextShotTime) return;
 
         ProjectileHero p;
         Vector3 vel = Vector3.up * def.velocity;
 
         switch (type)
-        {                                                      // k
+        {
             case eWeaponType.blaster:
                 p = MakeProjectile();
                 p.vel = vel;
                 break;
 
-            case eWeaponType.spread:                                         // l
+            case eWeaponType.spread:
                 p = MakeProjectile();
                 p.vel = vel;
                 p = MakeProjectile();
@@ -140,23 +137,26 @@ public class Weapon : MonoBehaviour
                 p.vel = p.transform.rotation * vel;
                 break;
 
+            case eWeaponType.phaser:
+                p = MakeProjectile();
+                p.isPhaser = true; // Enable Phaser behavior
+                p.waveFrequency = def.waveFrequency;
+                p.waveMagnitude = def.waveMagnitude;
+                break;
         }
     }
 
     private ProjectileHero MakeProjectile()
-    {                                 // m
-        GameObject go;
-        go = Instantiate<GameObject>(def.projectilePrefab, PROJECTILE_ANCHOR); // n
+    {
+        GameObject go = Instantiate<GameObject>(def.projectilePrefab, PROJECTILE_ANCHOR);
         ProjectileHero p = go.GetComponent<ProjectileHero>();
 
         Vector3 pos = shotPointTrans.position;
-        pos.z = 0;                                                            // o
+        pos.z = 0;
         p.transform.position = pos;
 
         p.type = type;
-        nextShotTime = Time.time + def.delayBetweenShots;                    // p
+        nextShotTime = Time.time + def.delayBetweenShots;
         return (p);
     }
 }
-
-
