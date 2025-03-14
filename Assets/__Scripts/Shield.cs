@@ -8,29 +8,57 @@ public class Shield : MonoBehaviour
     public float rotationsPerSecond = 0.1f;
 
     [Header("Dynamic")]
-    public int levelShown = 0; // This is set between lines // c & d
+    public int levelShown = 0;
 
-    // This non-public variable will not appear in the Inspector
-    Material mat;                                                             // a
+    private Material mat; // Shield material
 
     void Start()
     {
-        mat = GetComponent<Renderer>().material;                              // b
+        // Check if Renderer component exists before accessing it
+        Renderer rend = GetComponent<Renderer>();
+        if (rend == null)
+        {
+            Debug.LogError("Shield: Renderer component is missing!");
+            return;
+        }
+
+        // Get the material
+        mat = rend.material;
+        if (mat == null)
+        {
+            Debug.LogError("Shield: Material not found on Renderer!");
+            return;
+        }
     }
 
     void Update()
     {
-        // Read the current shield level from the Hero Singleton
-        int currLevel = Mathf.FloorToInt(Hero.S.shieldLevel);               // c
-                                                                            // If this is different from levelShown...
+        // Check if Hero Singleton is available before accessing shieldLevel
+        if (Hero.S == null)
+        {
+            Debug.LogError("Shield: Hero Singleton (Hero.S) is null!");
+            return;
+        }
+
+        int currLevel = Mathf.FloorToInt(Hero.S.shieldLevel);
+
+        // Update texture offset only if shield level changes
         if (levelShown != currLevel)
         {
             levelShown = currLevel;
-            // Adjust the texture offset to show different shield level
-            mat.mainTextureOffset = new Vector2(0.2f * levelShown, 0);       // d
+            if (mat.HasProperty("_MainTex")) // Ensure shader supports texture offsets
+            {
+                mat.mainTextureOffset = new Vector2(0.2f * levelShown, 0);
+            }
+            else
+            {
+                Debug.LogWarning("Shield: Material does not support texture offset!");
+            }
         }
-        // Rotate the shield a bit every frame in a time-based way
-        float rZ = -(rotationsPerSecond * Time.time * 360) % 360f;               // e
+
+        // Rotate the shield in a time-based way
+        float rZ = -(rotationsPerSecond * Time.time * 360) % 360f;
         transform.rotation = Quaternion.Euler(0, 0, rZ);
     }
 }
+
