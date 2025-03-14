@@ -14,6 +14,9 @@ public class Enemy : MonoBehaviour
     public int score = 100;   // Points earned for destroying this
     public float powerUpDropChance = 1f;
 
+    protected ScoreText scoreText;
+
+
 
     // private BoundsCheck bndCheck;                                             // b
     protected BoundsCheck bndCheck;
@@ -22,6 +25,10 @@ public class Enemy : MonoBehaviour
     void Awake()
     {                                                            // c
         bndCheck = GetComponent<BoundsCheck>();
+        scoreText = GameObject.Find("ScoreText").GetComponent<ScoreText>();
+        if (scoreText==null){
+            Debug.LogError("ScoreText not found.");
+        }
     }
 
     // This is a Property: A method that acts like a field
@@ -77,8 +84,9 @@ public class Enemy : MonoBehaviour
                         calledShipDestroyed = true;
                         Main.SHIP_DESTROYED(this);
                     }
-                    // Destroy this Enemy
-                    Destroy(this.gameObject);
+                    scoreText.AddPoints(score);
+                    Destroy(this.gameObject); 
+                    
                 }
             }
             // Destroy the ProjectileHero regardless
