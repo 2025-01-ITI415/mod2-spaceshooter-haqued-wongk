@@ -742,6 +742,8 @@ MonoBehaviour:
     damagePerSec: 0
     delayBetweenShots: 0.2
     velocity: 50
+    waveFrequency: 2
+    waveMagnitude: 0.5
   - type: 2
     letter: S
     powerUpColor: {r: 0.18623178, g: 0.8773585, b: 0.8561891, a: 1}
@@ -752,6 +754,8 @@ MonoBehaviour:
     damagePerSec: 0
     delayBetweenShots: 0.4
     velocity: 50
+    waveFrequency: 2
+    waveMagnitude: 0.5
   - type: 6
     letter: O
     powerUpColor: {r: 0, g: 1, b: 0, a: 1}
@@ -762,6 +766,20 @@ MonoBehaviour:
     damagePerSec: 0
     delayBetweenShots: 0
     velocity: 50
+    waveFrequency: 2
+    waveMagnitude: 0.5
+  - type: 6
+    letter: O
+    powerUpColor: {r: 0, g: 1, b: 0, a: 1}
+    weaponModelPrefab: {fileID: 0}
+    projectilePrefab: {fileID: 8884485313326729009, guid: 93cdb1254cc5842aeb5402d7b9f73a99, type: 3}
+    projectileColor: {r: 0, g: 0, b: 0, a: 1}
+    damageOnHit: 0
+    damagePerSec: 0
+    delayBetweenShots: 0
+    velocity: 50
+    waveFrequency: 2
+    waveMagnitude: 0.5
   powerUpFrequency: 01000000010000000200000006000000
 --- !u!114 &963194230
 MonoBehaviour:

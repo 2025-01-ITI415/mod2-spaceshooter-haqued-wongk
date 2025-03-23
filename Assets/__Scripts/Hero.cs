@@ -43,8 +43,8 @@ public class Hero : MonoBehaviour
         //fireEvent += TempFire;
 
         // Reset the weapons to start _Hero with 1 blaster
-        ClearWeapons();
-        weapons[0].SetType(eWeaponType.blaster);
+       // ClearWeapons();
+       // weapons[0].SetType(eWeaponType.blaster);
     }
 
     void Update()
@@ -69,10 +69,12 @@ public class Hero : MonoBehaviour
         //}
 
         // Use the fireEvent to fire Weapons when the Spacebar is pressed.
-        if (Input.GetAxis("Jump") == 1 && fireEvent != null)
+        if (Input.GetKey(KeyCode.Space) && fireEvent != null)
         {
             fireEvent();
         }
+
+
 
     }
 

@@ -2,9 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// Enum of various weapon types, including Phaser which moves in a wave.
-/// </summary>
 public enum eWeaponType
 {
     none,       // The default / no weapon
@@ -16,9 +13,6 @@ public enum eWeaponType
     shield      // Raise shieldLevel
 }
 
-/// <summary>
-/// WeaponDefinition defines the properties of each weapon type.
-/// </summary>
 [System.Serializable]
 public class WeaponDefinition
 {
@@ -35,16 +29,16 @@ public class WeaponDefinition
     public Color projectileColor = Color.white;
     [Tooltip("Damage per hit")]
     public float damageOnHit = 0;
-    [Tooltip("Damage per second for lasers (Not Implemented)")]
+    [Tooltip("Damage per second for lasers")]
     public float damagePerSec = 0;
     [Tooltip("Delay between shots")]
     public float delayBetweenShots = 0;
     [Tooltip("Velocity of projectiles")]
     public float velocity = 50;
     [Tooltip("Wave Frequency (for Phaser)")]
-    public float waveFrequency = 2f;  // How fast the wave oscillates
+    public float waveFrequency = 2f;
     [Tooltip("Wave Magnitude (for Phaser)")]
-    public float waveMagnitude = 0.5f; // Size of the wave motion
+    public float waveMagnitude = 0.5f;
 }
 
 public class Weapon : MonoBehaviour
@@ -64,7 +58,7 @@ public class Weapon : MonoBehaviour
     private LineRenderer laserLine;
     private bool laserFiring = false;
     public float laserRange = 10f;
-    public float laserDamage = 20f;
+    public float laserDamage;
     public float laserDuration = 0.1f;
 
     void Start()
@@ -80,13 +74,6 @@ public class Weapon : MonoBehaviour
 
         Hero hero = GetComponentInParent<Hero>();
         if (hero != null) hero.fireEvent += Fire;
-
-        // Laser setup
-        if (type == eWeaponType.laser)
-        {
-            laserLine = GetComponent<LineRenderer>();
-            laserLine.enabled = false;
-        }
     }
 
     public eWeaponType type
@@ -99,7 +86,14 @@ public class Weapon : MonoBehaviour
     {
         _type = wt;
 
-        gameObject.SetActive(wt != eWeaponType.none);
+        if (_type == eWeaponType.none)
+        {
+            this.gameObject.SetActive(false);
+            return;
+        }
+
+        this.gameObject.SetActive(true);
+
         def = Main.GET_WEAPON_DEFINITION(_type);
 
         if (weaponModel != null) Destroy(weaponModel);
@@ -108,10 +102,27 @@ public class Weapon : MonoBehaviour
         weaponModel.transform.localScale = Vector3.one;
 
         nextShotTime = 0;
+
+        if (_type == eWeaponType.laser)
+        {
+            laserDamage = def.damagePerSec;
+            laserLine = GetComponent<LineRenderer>();
+            laserLine.enabled = false;
+        }
+      
+        if (def.weaponModelPrefab != null)
+        {
+            weaponModel = Instantiate<GameObject>(def.weaponModelPrefab, transform);
+            weaponModel.transform.localPosition = Vector3.zero;
+            weaponModel.transform.localScale = Vector3.one;
+        }
+
     }
 
     private void Fire()
     {
+        Debug.Log("Weapon.Fire() called on: " + gameObject.name);
+
         if (!gameObject.activeInHierarchy || Time.time < nextShotTime) return;
 
         ProjectileHero p;
