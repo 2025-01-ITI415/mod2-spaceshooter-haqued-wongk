@@ -53,17 +53,22 @@ public class Weapon : MonoBehaviour
 
     [Header("Dynamic")]
     [SerializeField]
-    [Tooltip("Setting this manually while playing does not work properly.")]
     private eWeaponType _type = eWeaponType.none;
     public WeaponDefinition def;
-    public float nextShotTime; // Time the Weapon will fire next
+    public float nextShotTime;
 
     private GameObject weaponModel;
     private Transform shotPointTrans;
 
+    // Laser-related fields
+    private LineRenderer laserLine;
+    private bool laserFiring = false;
+    public float laserRange = 10f;
+    public float laserDamage = 20f;
+    public float laserDuration = 0.1f;
+
     void Start()
     {
-        // Set up PROJECTILE_ANCHOR if it has not already been done
         if (PROJECTILE_ANCHOR == null)
         {
             GameObject go = new GameObject("_ProjectileAnchor");
@@ -71,13 +76,17 @@ public class Weapon : MonoBehaviour
         }
 
         shotPointTrans = transform.GetChild(0);
-
-        // Call SetType() for the default _type set in the Inspector
         SetType(_type);
 
-        // Find the fireEvent of a Hero Component in the parent hierarchy
         Hero hero = GetComponentInParent<Hero>();
         if (hero != null) hero.fireEvent += Fire;
+
+        // Laser setup
+        if (type == eWeaponType.laser)
+        {
+            laserLine = GetComponent<LineRenderer>();
+            laserLine.enabled = false;
+        }
     }
 
     public eWeaponType type
@@ -89,31 +98,20 @@ public class Weapon : MonoBehaviour
     public void SetType(eWeaponType wt)
     {
         _type = wt;
-        if (type == eWeaponType.none)
-        {
-            this.gameObject.SetActive(false);
-            return;
-        }
-        else
-        {
-            this.gameObject.SetActive(true);
-        }
 
-        // Get the WeaponDefinition for this type
+        gameObject.SetActive(wt != eWeaponType.none);
         def = Main.GET_WEAPON_DEFINITION(_type);
 
-        // Destroy any old model and attach a new one
         if (weaponModel != null) Destroy(weaponModel);
         weaponModel = Instantiate<GameObject>(def.weaponModelPrefab, transform);
         weaponModel.transform.localPosition = Vector3.zero;
         weaponModel.transform.localScale = Vector3.one;
 
-        nextShotTime = 0; // You can fire immediately after _type is set
+        nextShotTime = 0;
     }
 
     private void Fire()
     {
-        // If inactive or not enough time has passed, return
         if (!gameObject.activeInHierarchy || Time.time < nextShotTime) return;
 
         ProjectileHero p;
@@ -139,11 +137,46 @@ public class Weapon : MonoBehaviour
 
             case eWeaponType.phaser:
                 p = MakeProjectile();
-                p.isPhaser = true; // Enable Phaser behavior
+                p.isPhaser = true;
                 p.waveFrequency = def.waveFrequency;
                 p.waveMagnitude = def.waveMagnitude;
                 break;
+
+            case eWeaponType.laser:
+                if (!laserFiring)
+                {
+                    StartCoroutine(FireLaser());
+                }
+                break;
         }
+    }
+
+    private IEnumerator FireLaser()
+    {
+        laserFiring = true;
+        laserLine.enabled = true;
+        laserLine.SetPosition(0, transform.position);
+
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.up, laserRange);
+        if (hit.collider != null)
+        {
+            laserLine.SetPosition(1, hit.point);
+
+            Enemy enemy = hit.collider.GetComponent<Enemy>();
+            if (enemy != null)
+            {
+                enemy.TakeDamage(laserDamage);
+            }
+        }
+        else
+        {
+            laserLine.SetPosition(1, transform.position + Vector3.up * laserRange);
+        }
+
+        yield return new WaitForSeconds(laserDuration);
+
+        laserLine.enabled = false;
+        laserFiring = false;
     }
 
     private ProjectileHero MakeProjectile()
