@@ -97,9 +97,15 @@ public class Weapon : MonoBehaviour
         def = Main.GET_WEAPON_DEFINITION(_type);
 
         if (weaponModel != null) Destroy(weaponModel);
-        weaponModel = Instantiate<GameObject>(def.weaponModelPrefab, transform);
-        weaponModel.transform.localPosition = Vector3.zero;
-        weaponModel.transform.localScale = Vector3.one;
+
+    
+        if (def.weaponModelPrefab != null)
+        {
+            weaponModel = Instantiate<GameObject>(def.weaponModelPrefab, transform);
+            weaponModel.transform.localPosition = Vector3.zero;
+            weaponModel.transform.localScale = Vector3.one;
+        }
+
 
         nextShotTime = 0;
 
@@ -168,20 +174,21 @@ public class Weapon : MonoBehaviour
         laserLine.enabled = true;
         laserLine.SetPosition(0, transform.position);
 
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.up, laserRange);
-        if (hit.collider != null)
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position, Vector3.up, out hit, Mathf.Infinity))
         {
+            Debug.Log("Laser hit: " + hit.collider.name);
             laserLine.SetPosition(1, hit.point);
 
             Enemy enemy = hit.collider.GetComponent<Enemy>();
             if (enemy != null)
             {
-                enemy.TakeDamage(laserDamage);
+                enemy.TakeDamage(laserDamage * Time.deltaTime);
             }
         }
         else
         {
-            laserLine.SetPosition(1, transform.position + Vector3.up * laserRange);
+            laserLine.SetPosition(1, transform.position + Vector3.up * 100f);
         }
 
         yield return new WaitForSeconds(laserDuration);
