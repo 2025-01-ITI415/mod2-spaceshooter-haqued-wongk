@@ -150,6 +150,23 @@ public class Weapon : MonoBehaviour
                 p = MakeProjectile();
                 p.transform.rotation = Quaternion.AngleAxis(-10, Vector3.back);
                 p.vel = p.transform.rotation * vel;
+                p = MakeProjectile();
+                p.transform.rotation = Quaternion.AngleAxis(20, Vector3.back);
+                p.vel = p.transform.rotation * vel;
+                p = MakeProjectile();
+                p.transform.rotation = Quaternion.AngleAxis(-20, Vector3.back);
+                p.vel = p.transform.rotation * vel;
+                break;
+            case eWeaponType.missile:
+                p = MakeProjectile();
+                Vector3 newScale = transform.localScale;
+                newScale.x = 1.0f;
+                newScale.y = 1.0f;
+                newScale.z = 3.0f;
+                p.transform.localScale = newScale;
+                p.vel = vel;
+                break;
+            case eWeaponType.laser:
                 break;
 
             case eWeaponType.phaser:

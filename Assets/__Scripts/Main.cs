@@ -13,7 +13,7 @@ public class Main : MonoBehaviour
     [Header("Inscribed")]
     public bool spawnEnemies = true;
     public GameObject[] prefabEnemies;               // Array of Enemy prefabs
-    public float enemySpawnPerSecond = 0.5f;  // # Enemies spawned/second
+    public static float enemySpawnPerSecond = 0.5f;  // # Enemies spawned/second
     public float enemyInsetDefault = 1.5f;    // Inset from the sides
     public float gameRestartDelay = 2.0f;
     public GameObject prefabPowerUp;
@@ -22,6 +22,8 @@ public class Main : MonoBehaviour
                                      eWeaponType.blaster, eWeaponType.blaster,
                                      eWeaponType.spread,  eWeaponType.shield };
     private BoundsCheck bndCheck;
+    protected static ScoreText scoreText;
+    public static int count = 1000;
 
     void Awake()
     {
@@ -29,6 +31,8 @@ public class Main : MonoBehaviour
         // Set bndCheck to reference the BoundsCheck component on this 
         // GameObject
         bndCheck = GetComponent<BoundsCheck>();
+        scoreText = GameObject.Find("ScoreText").GetComponent<ScoreText>();
+
 
         // Invoke SpawnEnemy() once (in 2 seconds, based on default values)
         Invoke(nameof(SpawnEnemy), 1f / enemySpawnPerSecond);                // a
@@ -40,6 +44,10 @@ public class Main : MonoBehaviour
             WEAP_DICT[def.type] = def;
         }
 
+    }
+
+    public static void setEnemySpawnPerSecond(float a){
+        enemySpawnPerSecond = a;
     }
 
     public void SpawnEnemy()
@@ -73,6 +81,8 @@ public class Main : MonoBehaviour
         Invoke(nameof(SpawnEnemy), 1f / enemySpawnPerSecond);                // g
     }
 
+
+
     void DelayedRestart()
     {                                                   // c
                                                         // Invoke the Restart() method in gameRestartDelay seconds
@@ -81,9 +91,12 @@ public class Main : MonoBehaviour
 
     void Restart()
     {
+
         // Reload __Scene_0 to restart the game
         // "__Scene_0" below starts with 2 underscores and ends with a zero.
-        SceneManager.LoadScene("__Scene_0");                               // d
+        SceneManager.LoadScene("__Scene_0");
+        setEnemySpawnPerSecond(0.5f);
+        count = 1000;                               // d
     }
 
     static public void HERO_DIED()
@@ -132,6 +145,12 @@ public class Main : MonoBehaviour
 
             // Set it to the position of the destroyed ship
             pUp.transform.position = e.transform.position;
+        }
+
+        if (scoreText.getPlayerScore()>count){
+            print("BACKUP INCOMING");
+            setEnemySpawnPerSecond(enemySpawnPerSecond*2);
+            count+=4000;
         }
     }
 
