@@ -58,7 +58,7 @@ public class Weapon : MonoBehaviour
     private LineRenderer laserLine;
     private bool laserFiring = false;
     public float laserRange = 10f;
-    public float laserDamage = 100f;
+    public float laserDamage = 1f;
     public float laserDuration = 0.1f;
 
     void Start()

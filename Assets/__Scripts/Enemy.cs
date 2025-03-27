@@ -87,11 +87,12 @@ public class Enemy : MonoBehaviour
 
     public void TakeDamage(float damage)
     {
-        Debug.Log($"Enemy took {damage} damage!");
         health -= damage;
+        Debug.Log("Enemy took damage! Current health: " + health);
 
         if (health <= 0)
         {
+            Debug.Log("Enemy destroyed!");
             Destroy(gameObject);
         }
     }
