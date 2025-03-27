@@ -166,8 +166,6 @@ public class Weapon : MonoBehaviour
                 p.transform.localScale = newScale;
                 p.vel = vel;
                 break;
-            case eWeaponType.laser:
-                break;
 
             case eWeaponType.phaser:
                 p = MakeProjectile();
