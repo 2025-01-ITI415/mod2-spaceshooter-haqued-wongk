@@ -902,7 +902,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21038221e5a2246ed83726e486449c79, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnEnemies: 1
+  spawnEnemies: 0
   prefabEnemies:
   - {fileID: 2081532115668943053, guid: 9c29a07279b374e2aaf7a015da15211e, type: 3}
   - {fileID: 3319825933102930435, guid: ac8336763c0c047aca9a469c10d3f448, type: 3}
@@ -913,7 +913,19 @@ MonoBehaviour:
   enemyInsetDefault: 1.5
   gameRestartDelay: 2
   prefabPowerUp: {fileID: 0}
-  weaponDefinitions: []
+  weaponDefinitions:
+  - type: 5
+    letter: L
+    powerUpColor: {r: 0, g: 1, b: 0.17274213, a: 0}
+    weaponModelPrefab: {fileID: 5705590428853703791, guid: 6713d5df68617483ca02bf91b9f52d2b, type: 3}
+    projectilePrefab: {fileID: 8884485313326729009, guid: 93cdb1254cc5842aeb5402d7b9f73a99, type: 3}
+    projectileColor: {r: 0, g: 0, b: 0, a: 0}
+    damageOnHit: 0
+    damagePerSec: 50
+    delayBetweenShots: 0.1
+    velocity: 0
+    waveFrequency: 0
+    waveMagnitude: 0
   powerUpFrequency: 01000000010000000200000006000000
 --- !u!114 &1191990397
 MonoBehaviour:

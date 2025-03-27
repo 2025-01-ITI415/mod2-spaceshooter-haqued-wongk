@@ -58,7 +58,7 @@ public class Weapon : MonoBehaviour
     private LineRenderer laserLine;
     private bool laserFiring = false;
     public float laserRange = 10f;
-    public float laserDamage;
+    public float laserDamage = 100f;
     public float laserDuration = 0.1f;
 
     void Start()
@@ -183,7 +183,8 @@ public class Weapon : MonoBehaviour
             Enemy enemy = hit.collider.GetComponent<Enemy>();
             if (enemy != null)
             {
-                enemy.TakeDamage(laserDamage * Time.deltaTime);
+                enemy.TakeDamage(laserDamage); // Remove Time.deltaTime for testing
+
             }
         }
         else
