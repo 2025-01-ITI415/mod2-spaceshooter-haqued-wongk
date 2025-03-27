@@ -8,11 +8,18 @@ public class ScoreText : MonoBehaviour
     public static ScoreText instance;
     public int playerScore;
     public Text scoreText;
+    
 
     public void AddPoints(int pointsToAdd){
         playerScore+=pointsToAdd;
         UpdateScoreText();
     }
+
+    public int getPlayerScore(){
+        return playerScore;
+    }
+
+    
     private void UpdateScoreText(){
         if (scoreText != null)
         {
