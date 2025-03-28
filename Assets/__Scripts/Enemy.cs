@@ -96,14 +96,20 @@ public class Enemy : MonoBehaviour
 
     public void TakeDamage(float damage)
     {
-        health -= damage;
-        Debug.Log("Enemy took damage! Current health: " + health);
+        if (bndCheck.isOnScreen){
+            health -= damage;
+            Debug.Log("Enemy took damage! Current health: " + health);
 
-        if (health <= 0)
-        {
-            Debug.Log("Enemy destroyed!");
-            scoreText.AddPoints(score);
-            Destroy(gameObject);
+            if (health <= 0){    
+                Debug.Log("Enemy destroyed!");
+                if (!calledShipDestroyed)
+                    {
+                        calledShipDestroyed = true;
+                        Main.SHIP_DESTROYED(this);
+                    }
+                scoreText.AddPoints(score);
+                Destroy(gameObject);
+            }
         }
     }
 
