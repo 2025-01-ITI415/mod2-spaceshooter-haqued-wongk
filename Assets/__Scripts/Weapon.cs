@@ -127,7 +127,7 @@ public class Weapon : MonoBehaviour
 
     private void Fire()
     {
-        Debug.Log("Weapon.Fire() called on: " + gameObject.name);
+        //Debug.Log("Weapon.Fire() called on: " + gameObject.name);
 
         if (!gameObject.activeInHierarchy || Time.time < nextShotTime) return;
 
