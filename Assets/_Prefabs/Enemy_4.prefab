@@ -117,7 +117,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 10
   fireRate: 0.3
-  health: 25
+  health: 15
   score: 500
   powerUpDropChance: 1
 --- !u!114 &-5834237933516866095
