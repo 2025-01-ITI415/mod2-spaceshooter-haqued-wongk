@@ -102,6 +102,7 @@ public class Enemy : MonoBehaviour
         if (health <= 0)
         {
             Debug.Log("Enemy destroyed!");
+            scoreText.AddPoints(score);
             Destroy(gameObject);
         }
     }

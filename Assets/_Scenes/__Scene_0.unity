@@ -1059,11 +1059,11 @@ MonoBehaviour:
     projectilePrefab: {fileID: 8884485313326729009, guid: 93cdb1254cc5842aeb5402d7b9f73a99, type: 3}
     projectileColor: {r: 1, g: 0.9215687, b: 0, a: 1}
     damageOnHit: 0
-    damagePerSec: 5
+    damagePerSec: 2
     delayBetweenShots: 0.1
     velocity: 0
-    waveFrequency: 0
-    waveMagnitude: 0
+    waveFrequency: 2
+    waveMagnitude: 0.5
   powerUpFrequency: 0100000002000000060000000400000005000000
 --- !u!114 &963194230
 MonoBehaviour:
